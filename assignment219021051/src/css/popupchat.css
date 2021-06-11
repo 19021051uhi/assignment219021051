@@ -1,0 +1,85 @@
+
+
+.btn-cancel{
+
+  margin: 5px;
+
+}
+.back{
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 25px;
+  background: rgb(193, 243, 245);
+}
+.sent {
+  flex-direction: row-reverse;
+}
+
+.sent p {
+  color: black;
+  margin-top: 20px;
+}
+.received p {
+  color: black;
+  margin-top: 20px;
+}
+
+.message {
+  display: flex;
+  align-items: center;
+  align-content: center;
+}
+
+.modalb{
+
+  overflow-y: scroll;
+  height:400px;
+}
+
+.circles{
+
+  margin-right: 10px;
+  border-radius: 50%;
+  height: var(--avatar-size);
+  text-align: center;
+  width: var(--avatar-size);
+}
+
+.input-chat {
+  width: 70%;
+  margin-left: 25px;
+} 
+
+.btn-send {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+form {
+  position: relative;
+}
+
+.picture{
+
+  width: 25px;  
+  height: 25px;
+}
+
+.btn-up {
+  position: absolute;
+  top: 0;
+  margin-right: 100px;
+  margin-top: 2px;
+
+}
+
+.form-controls{
+  margin-top: 10px;
+}
+
+.outer {
+  display: table;
+  place-items: center;
+}
+

@@ -1,0 +1,36 @@
+.videotext {
+
+    margin-top: 5px;
+  } 
+  
+.videoplayer{
+    border: black;
+    border-width: 1px;  
+    border-radius: 5px;
+    border-style: solid;
+
+  }
+
+.custom-modal {
+    width:80% !important;
+  }
+
+.confused{
+
+    background-color: red;
+    color: white;
+    padding: 5px;
+    float: right !important;
+}
+
+.btn-send{
+
+  margin: 5px;
+
+}
+
+.btn-cancel{
+
+  margin: 5px;
+
+}
