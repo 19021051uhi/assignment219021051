@@ -34,3 +34,21 @@
   margin: 5px;
 
 }
+
+.faqs{
+  margin-bottom: 10px;
+  margin-left: 10px;
+  overflow-y: scroll;
+  max-height: 400px;
+}
+
+.vl {
+  border-left: 2px solid rgb(0, 0, 0);
+  height: 400px;
+  width: 5px;
+}
+
+.col-{
+
+  max-width: 370px;
+}

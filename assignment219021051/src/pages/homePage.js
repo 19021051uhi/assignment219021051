@@ -1,30 +1,3 @@
-// import React, { useContext } from "react";
-// import { Link } from "react-router-dom";
-// import { AuthContext } from "./authPage";
-// import QuestionPage from './QuestionPage'
-// import {firestore} from "../services/firebase"
-
-
-
-// const Home = () => {
-//   const { currentUser } = useContext(AuthContext);
-//   return (
-//     <>
-//       {currentUser ? (
-//         <p>
-//           <QuestionPage />
-//         </p>
-//       ) : (
-//         <p>
-//           <Link to="/login">Log In</Link> or <Link to="/signup">Sign Up</Link> 
-          
-//         </p>
-//       )}
-//     </>
-//   );
-// };
-
-// export default Home;
 
 import React, { Component } from 'react';
 import withFirebaseAuth from 'react-with-firebase-auth'

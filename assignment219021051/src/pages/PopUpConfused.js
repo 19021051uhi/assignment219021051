@@ -1,10 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Button, Modal} from 'react-bootstrap';
 import {firestore} from "../services/firebase"
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import { Link, useRouteMatch } from "react-router-dom";
+import { useCollectionData } from 'react-firebase-hooks/firestore';
 import '../css/popup.css';
 var userExist = false;
 var userPosted = false;
@@ -35,6 +36,13 @@ function PopUp(props) {
   const questionId = "balances"
 
   const [usertext, setChatTxt] = useState("")
+
+  const dummy = useRef();
+  const messagesRef = firestore.collection('Chats');
+  const query = messagesRef.where('listed', '==', 'true')
+
+  const [messages] = useCollectionData(query, { idField: 'id' });
+  const auth = firebase.auth();
 
 
   firebase.auth().onAuthStateChanged(function(user) {
@@ -68,6 +76,25 @@ function PopUp(props) {
   }, [])
 
 
+  function FAQS(props) {
+    const { text, photoURL, link } = props.message;
+    console.log("************** " + props.message)
+    const messageClass = 'received';
+  
+    return (<>
+      <div className={`message ${messageClass}`}>
+        <div className="message back outer">
+          <img class="circles " src={photoURL || 'https://firebasestorage.googleapis.com/v0/b/assignment219021051.appspot.com/o/avatar.png?alt=media'} />
+          <div class="inner"><p>{text}</p></div>
+          {link ? <div class="inner"><img class="inner" src={link} style={{maxWidth:300, maxHeight:300}} /></div> : <br/>}
+        </div>
+      </div>
+    </>)  
+  }
+  
+
+
+
 
   return (
     <>
@@ -80,13 +107,24 @@ function PopUp(props) {
          <Modal.Title>
          </Modal.Title>
         </Modal.Header>
-        <Modal.Body >
-          <div class="d-flex justify-content-center" width="500">
-            <video class="videoplayer" width="400" height="300" controls >
-              <source src={videoUri} type="video/mp4"/>
-            </video>
+        <div class="row">
+            <div class="col-lg faqs">
+              <main>
+                {messages && messages.map(msg => <FAQS key={msg.uid} message={msg} />)}
+                <span ref={dummy}></span>
+              </main>
+            </div>
+            <div class="vl"></div>
+            <div class="col-lg">
+              <Modal.Body >
+                <div class="d-flex justify-content-center" width="500">
+                  <video class="videoplayer" width="400" height="300" controls >
+                    <source src={videoUri} type="video/mp4"/>
+                  </video>
+                </div>
+              </Modal.Body>
+            </div>
           </div>
-        </Modal.Body>
         <Modal.Footer>
           <div class="container" >
             <div class="row">
@@ -109,8 +147,10 @@ function PopUp(props) {
                 <label for="exampleInputEmail1">What have you found confusing about this video?</label>
                 <input type="text" onChange={ e => setChatTxt({text: e.target.value})} class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Type your message here..."/>
               </div>
-                <button type="button" class="btn btn-primary btn-send" onClick={() => {checkIfUserExist(usertext);}}>Send</button>
+                <button type="button" class="btn btn-primary btn-cancel" onClick={() => {checkIfUserExist(usertext);}}>Send</button>
                 <button type="button" class="btn btn-outline-info btn-cancel" onClick={() => {chatOpen(chat); descClose(desc);}}>Cancel</button>
+
+
             </form>
           </div>
         </Modal.Footer>

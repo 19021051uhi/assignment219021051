@@ -65,60 +65,6 @@ function PopUp(props) {
 
   function addToFAQ(uid, dateposted){
 
-    // firebase.auth().onAuthStateChanged(function(user) {
-    //   if (user) {
-
-    //     firestore.collection("Chats")
-    //     .where('uid', '==', uid)
-    //     .where('dateposted', '==', dateposted)
-    //     .update({
-    //       listed: 'true',
-    //     })
-    //     .then(res => {
-
-    //       alert('000000  ' + res)
-
-    //     }).catch(err => {
-    //       alert('99999' + err)
-          
-    //     });
-
-    //   }
-    // });
-
-
-    console.log('uuuuuuuuuuuuuuuuuuuu ' + uid + " ////////  " + dateposted)
-    // const collection = firebase.firestore().collection("Users")
-
-    // const newDocumentBody = {
-    //   listed: 'true',
-      
-    // }
-
-    // collection
-    // .where('uid', '==', uid)
-    // .where('dateposted', '==', dateposted)
-    // .get().then(response => {
-    //     let batch = firebase.firestore().batch()
-    //     response.docs.forEach((doc) => {
-    //         console.log('zzzzzzzzzzzz ' + doc.id)
-
-    //         const docRef = firebase.firestore().collection("Users").doc(doc.id)
-    //         batch.update(docRef, newDocumentBody)
-    //     })
-    //     batch.commit().then(() => {
-    //         console.log(`updated all documents inside ${"Users"}`)
-    //     }).catch(errr=>{
-
-    //       console.log("eeeerrrrrrrrrr=> " + errr)
-    //     })
-    // }).catch(err=>{
-    //   console.log('eeeeeeeeeer ==> ' + err)
-
-    // })
-
-
-
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
 
@@ -143,8 +89,6 @@ function PopUp(props) {
         }).catch(err => {
           
         });
-
-        
 
       }
     });
@@ -187,21 +131,7 @@ function PopUp(props) {
   
      }
    ) 
-  
-  
-  //  const storage = firebases.storage();
-  //  const files = file; 
-  //  files.map( filename => {
-  //      storage
-  //        .ref( `/covers/${filename}` )
-  //        .getDownloadURL()
-  //        .then( url => {
-  //          console.log( "Got download url: ", url );
-  //        });
-  //  });
-  
-  
-  
+
   }
   
   
@@ -212,13 +142,11 @@ function PopUp(props) {
     console.log('===========> ' + event.target.files[0]);
     setFileValue(event.target.files[0]);
     alert(`image (${event.target.files[0].name}) successfully attached!`)
-    // this.setState({
-    //     selectedFile: event.target.files[0]
-    // }, () => this.fileUploadHandler());
+
   };
   
   function ChatMessage(props) {
-    const { text, uid, photoURL, link, dateposted, userid } = props.message;
+    const { text, uid, photoURL,  link, dateposted, userid } = props.message;
   
     const messageClass = userid === auth.currentUser.email ? 'sent' : 'received';
   
@@ -234,8 +162,6 @@ function PopUp(props) {
     </>)  
   }
   
-
-
 
   return (
     <>
@@ -257,7 +183,6 @@ function PopUp(props) {
 
             </main>
 
-
           
           </div>
         </Modal.Body>
@@ -275,9 +200,6 @@ function PopUp(props) {
                 />
 
               <input value={formValue} class="form-controls input-chat" onChange={(e) => setFormValue(e.target.value)} placeholder="Type your message..." />
-
-
-
               <button type="submit" class="btn btn-primary btn-send" disabled={!formValue}>Send</button>
 
 
