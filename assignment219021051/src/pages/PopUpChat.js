@@ -18,8 +18,7 @@ function PopUp(props) {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  const { btntext,  vari, classn, isadmin} = props;
-  console.log("==---===>>>> " + isadmin)
+  const { btntext,  vari, classn, isadmin, replied, newMessage} = props;
 
   const dummy = useRef();
   const messagesRef = firestore.collection('Chats');
@@ -37,12 +36,13 @@ function PopUp(props) {
 
   const sendMessage = async (e, url) => {
     e.preventDefault();
-    console.log('=====9999999========>  ' + url)
+    if(isadmin){
+      updateFirstRow()
+    }
 
     const { uid, photoURL } = auth.currentUser;
     const questionid = 'balances'
     const userid = auth.currentUser.email
-
     var date = new Date();
     var timestamp = date.getTime();
 
@@ -63,6 +63,36 @@ function PopUp(props) {
     dummy.current.scrollIntoView({ behavior: 'smooth' });
   }
 
+  function updateFirstRow(){
+
+    firestore.collection("Chats")
+    .where('questionid', '==', 'balances')
+    .where('userid', '!=', auth.currentUser.email)
+    .get()
+    .then(query => {
+      const thing = query.docs[0];
+      let tmp = thing.data();
+      tmp.adminid = auth.currentUser.email;
+      console.log(tmp);
+      thing.ref.update(tmp);
+
+  });
+
+  const query = firestore.collection('Chats')
+  .where('questionid', '==', 'balances')
+  .get()
+  .then(function(querySnapshot) {
+    querySnapshot.forEach(function (doc) {
+        doc.ref.update(
+            {
+            adminid: auth.currentUser.email,
+            })
+          })
+        })
+          
+
+  }
+
   function addToFAQ(uid, dateposted){
 
     firebase.auth().onAuthStateChanged(function(user) {
@@ -75,7 +105,6 @@ function PopUp(props) {
         .then(querySnapshot => {
           const data = querySnapshot.docs.map(
             doc =>{
-              console.log("ffffffffffffffff  " + doc.id)
               alert('Successfully added to FAQs')
             const id = doc.id
             firestore.collection('Chats').doc(id)
@@ -99,8 +128,6 @@ function PopUp(props) {
 
 
   function handleUpload(e){
-    // console.log(this.state.image);
-    console.log("-------------> " + filevalue.name)
     e.preventDefault();
     
   
@@ -115,7 +142,6 @@ function PopUp(props) {
     uploadTask.on(firebases.storage.TaskEvent.STATE_CHANGED,
       (snapshot) =>{
         var progress = Math.round((snapshot.bytesTransferred/snapshot.totalBytes))*100
-        console.log("---%%%%%%----> " + progress)
   
       },(error) =>{
         throw error
@@ -123,7 +149,6 @@ function PopUp(props) {
         // uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) =>{
   
         uploadTask.snapshot.ref.getDownloadURL().then((url) =>{
-          console.log("---@@@@@@@@@----> " + url)
           sendMessage(e, url)
   
         })
@@ -139,7 +164,6 @@ function PopUp(props) {
   
   function fileSelectedHandler(event){
     
-    console.log('===========> ' + event.target.files[0]);
     setFileValue(event.target.files[0]);
     alert(`image (${event.target.files[0].name}) successfully attached!`)
 
@@ -166,7 +190,7 @@ function PopUp(props) {
   return (
     <>
       {classn === 'circle' ? 
-        <div class="btn-signout circle" onClick={handleShow}><span class="initials">R</span></div>
+        <div class="btn-signout circle" style={{ display: (replied || newMessage ? 'block' : 'none') }} onClick={handleShow}><span class="initials">{btntext}</span></div>
         :
         <Button variant={vari} class={classn} onClick={handleShow}>{btntext}</Button>
        }

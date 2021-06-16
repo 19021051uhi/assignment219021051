@@ -33,6 +33,8 @@ function PopUp(props) {
   const { btntext,  vari} = props;
 
   const [videoUri, setImageUri] = useState("")
+  const [showFAQ, setShowFAQ] = useState(false)
+
   const questionId = "balances"
 
   const [usertext, setChatTxt] = useState("")
@@ -40,9 +42,39 @@ function PopUp(props) {
   const dummy = useRef();
   const messagesRef = firestore.collection('Chats');
   const query = messagesRef.where('listed', '==', 'true')
-
   const [messages] = useCollectionData(query, { idField: 'id' });
+  
   const auth = firebase.auth();
+
+
+
+  firebase.auth().onAuthStateChanged(function(user) {
+    if (user) {
+
+      firestore.collection("Chats")
+      .where('listed', '==', 'true')
+      .get()
+      .then(querySnapshot => {
+        const data = querySnapshot.docs.map(
+          doc =>{
+            const data = JSON.parse(JSON.stringify(doc.data()))
+            if(data.listed){
+              setShowFAQ(true)
+            }else{
+              setShowFAQ(false)
+            }
+            
+          });
+
+      }).catch(err => {
+        
+      });
+
+    }
+  });
+
+
+
 
 
   firebase.auth().onAuthStateChanged(function(user) {
@@ -78,7 +110,6 @@ function PopUp(props) {
 
   function FAQS(props) {
     const { text, photoURL, link } = props.message;
-    console.log("************** " + props.message)
     const messageClass = 'received';
   
     return (<>
@@ -93,71 +124,7 @@ function PopUp(props) {
   }
   
 
-
-
-
-  return (
-    <>
-      <Button variant={vari} onClick={handleShow}>
-        {btntext}
-      </Button>
-
-      <Modal dialogClassName="custom-modal modal-lg" show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-         <Modal.Title>
-         </Modal.Title>
-        </Modal.Header>
-        <div class="row">
-            <div class="col-lg faqs">
-              <main>
-                {messages && messages.map(msg => <FAQS key={msg.uid} message={msg} />)}
-                <span ref={dummy}></span>
-              </main>
-            </div>
-            <div class="vl"></div>
-            <div class="col-lg">
-              <Modal.Body >
-                <div class="d-flex justify-content-center" width="500">
-                  <video class="videoplayer" width="400" height="300" controls >
-                    <source src={videoUri} type="video/mp4"/>
-                  </video>
-                </div>
-              </Modal.Body>
-            </div>
-          </div>
-        <Modal.Footer>
-          <div class="container" >
-            <div class="row">
-              <div class="col-lg-12">
-                <div class="confused justify-content-right" style={{ display: (desc ? 'block' : 'none') }} onClick={() => {chatOpen(chat); descClose(desc);}}>Confused</div>
-              </div>
-              <div class="col-lg-12">
-                <div style={{ display: (desc ? 'block' : 'none') }}>Slide: (<Link to="/#">prev</Link> | <Link to="/#">replay</Link> | <Link to="/#">next</Link> | <Link to="/#">-5s</Link> | <Link to="/#">+5s</Link> )</div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-lg-12" style={{ display: (desc ? 'block' : 'none') }}>
-                Question: (<Link to="/#">prev</Link> | <Link to="/#">replay</Link> | <Link to="/#">next</Link>)
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-12" style={{ display: (chat ? 'block' : 'none') }} >
-            <form>
-              <div class="form-group">
-                <label for="exampleInputEmail1">What have you found confusing about this video?</label>
-                <input type="text" onChange={ e => setChatTxt({text: e.target.value})} class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Type your message here..."/>
-              </div>
-                <button type="button" class="btn btn-primary btn-cancel" onClick={() => {checkIfUserExist(usertext);}}>Send</button>
-                <button type="button" class="btn btn-outline-info btn-cancel" onClick={() => {chatOpen(chat); descClose(desc);}}>Cancel</button>
-
-
-            </form>
-          </div>
-        </Modal.Footer>
-      </Modal>
-    </>
-  );
-}
+  
 function checkIfUserExist(ctext){
 
   firestore.collection("Users")
@@ -241,7 +208,7 @@ function checkIfUserPosted(ctext){
 
       });
       if(userPosted){
-        // alert('Post already exists!')
+        alert('Your message was sent and you will get a reply within 3 days')
         window.location = "/";
       }else{
 
@@ -262,7 +229,9 @@ function checkIfUserPosted(ctext){
         .then(() => {
           alert('Successfully sent!')
           userPosted = false;
+          alert('Your message was sent and you will get a reply within 3 days')
           window.location = "/";
+
 
         })
         .catch(error => {
@@ -275,5 +244,106 @@ function checkIfUserPosted(ctext){
       }
   });
 }
+
+
+  return (
+    <>
+      <Button variant={vari} onClick={handleShow}>
+        {btntext}
+      </Button>
+
+      <Modal dialogClassName="custom-modal modal-lg" show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+         <Modal.Title>
+         </Modal.Title>
+        </Modal.Header>
+        {
+
+          showFAQ ?
+
+          <div class="row">
+
+            <div class="col-lg faqs">
+              <main>
+                {messages && messages.map(msg => <FAQS key={msg.uid} message={msg} />)}
+                <span ref={dummy}></span>
+              </main>
+            </div>
+            <div class="vl"></div>
+            <div class="col-lg">
+              <Modal.Body >
+                <div class="d-flex justify-content-center" width="400">
+                  <video class="videoplayer" width="400" height="300" controls >
+                    <source src={videoUri} type="video/mp4"/>
+                  </video>
+                </div>
+              </Modal.Body>
+            </div>
+          </div>
+          :
+          <Modal.Body >
+          <div class="d-flex justify-content-center" width="400">
+            <video class="videoplayer" width="400" height="300" controls >
+              <source src={videoUri} type="video/mp4"/>
+            </video>
+          </div>
+          </Modal.Body>
+
+          }
+
+        <Modal.Footer>
+          <div class="container" >
+            <div class="row">
+              <div class="col-lg-12">
+                <div class="confused justify-content-right" style={{ display: (desc ? 'block' : 'none') }} onClick={() => {chatOpen(chat); descClose(desc);}}>Confused</div>
+              </div>
+              <div class="col-lg-12">
+                <div style={{ display: (desc ? 'block' : 'none') }}>Slide: (<Link to="/#">prev</Link> | <Link to="/#">replay</Link> | <Link to="/#">next</Link> | <Link to="/#">-5s</Link> | <Link to="/#">+5s</Link> )</div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-12" style={{ display: (desc ? 'block' : 'none') }}>
+                Question: (<Link to="/#">prev</Link> | <Link to="/#">replay</Link> | <Link to="/#">next</Link>)
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-12" style={{ display: (chat ? 'block' : 'none') }} >
+            <form>
+              <div class="form-group">
+                <label for="exampleInputEmail1">What have you found confusing about this video?</label>
+                <input type="text" onChange={ e => setChatTxt({text: e.target.value})} class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Type your message here..."/>
+              </div>
+                <button type="button" class="btn btn-primary btn-cancel" onClick={() => {checkIfUserExist(usertext); handleClose();}}>Send</button>
+                <button type="button" class="btn btn-outline-info btn-cancel" onClick={() => {chatOpen(chat); descClose(desc);}}>Cancel</button>
+
+
+            </form>
+          </div>
+        </Modal.Footer>
+      </Modal>
+    </>
+  );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export default PopUp;

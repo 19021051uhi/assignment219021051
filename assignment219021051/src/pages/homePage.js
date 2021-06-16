@@ -10,6 +10,7 @@ import '../css/home.css'
 import Popup from "./PopUpChat";
 
 var replied = false
+var newMessage = false;
 var admin = false
 var that
 
@@ -25,38 +26,8 @@ class Homepage extends Component {
     that = this;
   }
 
-
-
     componentDidMount(){
 
-      firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-  
-          firestore.collection("Chats")
-          .where('questionid', '==', 'balances')
-          .where('userid', '==', user.email)
-          .get()
-          .then(querySnapshot => {
-            const data = querySnapshot.docs.map(
-              doc =>{
-                const data = JSON.parse(JSON.stringify(doc.data()))
-                  if(!data.adminid){
-                  replied = false
-                }else{
-                  replied = true
-                }
-                
-              });
-
-              that.setState({categoriesList: replied});
-              that.forceUpdate();
-  
-          }).catch(err => {
-            
-          });
-
-        }
-      });
 
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
@@ -68,7 +39,6 @@ class Homepage extends Component {
             const data = querySnapshot.docs.map(
               doc =>{
                 const data = JSON.parse(JSON.stringify(doc.data()))
-                console.log('7777777777 ' + data.role)
                   if(data.role === 'admin'){
                   admin = true
                 }else{
@@ -86,6 +56,81 @@ class Homepage extends Component {
 
         }
       });
+
+
+
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          firestore.collection("Chats")
+          .where('questionid', '==', 'balances')
+          .where('userid', '==', user.email)
+          .get()
+          .then(querySnapshot => {
+
+            if(querySnapshot.docs){
+              replied = false
+            }
+            const data = querySnapshot.docs.map(
+              doc =>{
+                const data = JSON.parse(JSON.stringify(doc.data()))
+                if(!data){
+                  replied = false;
+                }
+                if(!data.adminid){
+                  replied = false
+                }else{
+                  replied = true
+                }
+                
+              });
+              that.setState({categoriesList: replied});
+              that.forceUpdate();
+  
+          }).catch(err => {
+            
+          });
+
+        }
+      });
+
+
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          firestore.collection("Chats")
+          .where('questionid', '==', 'balances')
+          .get()
+          .then(querySnapshot => {
+
+            if(querySnapshot.docs){
+              newMessage = false
+
+            }
+            const data = querySnapshot.docs.map(
+              doc =>{
+                const data = JSON.parse(JSON.stringify(doc.data()))
+                if(!data){
+                  newMessage = false;
+                }
+                if(data.adminid){
+                  newMessage = false
+                }else{
+                  if(admin){
+                    newMessage = true
+                  }else{
+                    newMessage = false
+                  }
+                }
+              });
+              that.setState({categoriesList: replied});
+              that.forceUpdate();
+  
+          }).catch(err => {
+            
+          });
+
+        }
+      });
+
 
   }
 
@@ -108,8 +153,7 @@ class Homepage extends Component {
                 user ? <div className="txt-hello">Hello, <b>{user.displayName}</b> </div> : <br/>
               }
               {
-                
-                user ? <Popup isadmin={admin} style={{ display: (this.state.categoriesList ? 'block' : 'none') }}  btntext="R" classn="circle" vari="primary"/> : <br/>
+                user ? <Popup isadmin={admin} style={{ display: (replied || newMessage ? 'block' : 'none') }} replied={replied} newMessage={newMessage} btntext={admin ? "A" : "R"} classn="circle" vari="primary"/> : <br/>
               }
               {
                 user ? <button type="button" className="btn-signout btn btn-danger" onClick={() => {firebase.auth().signOut(); window.location = "/";}}>Sign out</button> : <br/>
